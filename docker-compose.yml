@@ -61,13 +61,13 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/ljussiau/data/wordpress1'
+      device: '/Users/ljussiau/data/wordpress'
   mariadb:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/ljussiau/data/mariadb1'
+      device: '/Users/ljussiau/data/mariadb'
 
 
 
