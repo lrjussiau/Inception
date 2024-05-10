@@ -2,10 +2,6 @@ FROM debian:buster
 
 
 RUN apt-get update -y && apt-get install mariadb-server -y
-##RUN apt update -y\
- #   && apt upgrade -y\
- #   && apt install nginx -y\
-#	&& apt-get install mariadb-server -y
 
 COPY ./conf/50-server.cnf	/etc/mysql/mariadb.conf.d/
 #RUN chmod +x /etc/mysql/mariadb.conf.d/50-server.cnf

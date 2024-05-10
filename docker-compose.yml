@@ -12,7 +12,7 @@ services:
       context: requirements/mariadb
       dockerfile: Dockerfile
     env_file: .env
-    restart: on-failure # "on-failure", container will be restarted 
+    # restart: on-failure 
     expose:
       - "3306"
 
@@ -33,7 +33,7 @@ services:
     env_file: .env
     ports:
       - "443:443"
-    restart: on-failure
+    # restart: on-failure
 
   wordpress:
     image: wordpress
@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile
     depends_on:    # wordpress will be started after mariadb
       - mariadb
-    restart: on-failure
+    # restart: on-failure
     expose: 
       - "9000"
 
@@ -61,13 +61,13 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/ljussiau/data/wordpress'
+      device: '/Users/louis/data/wordpress'
   mariadb:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/ljussiau/data/mariadb'
+      device: '/Users/louis/data/mariadb'
 
 
 
