@@ -1,41 +1,38 @@
+# ==> Create a container from DEBIAN
 FROM debian:buster
 
-RUN apt-get update && apt-get -y install \
-	wget \
-	curl \
-	bash \
-	php \
-	php-cgi \
-	php-mysql \
-	php-fpm \
-	php-pdo \
-	php-gd php-cli \
-	php-mbstring \
-	redis \
-	php-redis \
-	&& rm -rf /var/lib/apt/lists/*
+# ==> MAJ of apt-get, to get the last version of packages
+RUN apt-get update && apt-get upgrade -y
 
-# I need to install wp_cli command and put it in the right directory /usr/local/bin
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-  && chmod +x wp-cli.phar \
-  && mv wp-cli.phar /usr/local/bin/wp
+# ==> Install WGET to download the WordPress source code
+RUN apt-get -y install wget
 
-# Copy the .conf in the html directory
-COPY ./conf/www.conf /etc/php/7.3/fpm/pool.d/
+# ==> Install PHP 7.3 and its dependencies
+RUN apt-get install -y php7.3\
+	php-fpm\
+	php-mysql\
+	mariadb-client 
+	# not sure for mariadb client
 
-#Create the folder to enable php start
-RUN mkdir /run/php
+# download wordpress 6.0 from wordpress.org into /var/www/ and extract it with tar command
+RUN wget https://wordpress.org/wordpress-6.0.tar.gz -P /var/www
+RUN cd /var/www && tar -xzf wordpress-6.0.tar.gz && rm wordpress-6.0.tar.gz
 
-#we copy the script, give the right to launch it in local on our computer
-COPY ./tools/create_wordpress.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/create_wordpress.sh
-ENTRYPOINT ["/usr/local/bin/create_wordpress.sh"]
+#copy of php configuration
+COPY	./conf/php.conf			/etc/php/7.3/fpm/pool.d/www.conf
 
-#We go the html directory
-WORKDIR /var/www/html/
+# give the right to the user to write in the directory
+RUN		chown -R root:root /var/www/wordpress
 
-#We expose the 9000 port
-EXPOSE 9000
+# install wp-cli to manage wordpress installation
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
-#Launch PHP FPM in foreground and ignore deamonize from conf file (-F)
-CMD ["/usr/sbin/php-fpm7.3", "-F"]
+# copy wp-cli to /usr/local/bin/wp and give the right to the user to write in the directory
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
+
+#copy auto_config
+COPY conf/script.sh auto_config.sh
+
+# RUN mv /var/www/wordpress/wp-config-sample.php /var/www/wordpress/wp-config.php
+ENTRYPOINT ["bash", "auto_config.sh"]
