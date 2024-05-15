@@ -1,8 +1,8 @@
 all : up
 
 up :
-	@mkdir /home/$(USER)/data/mariadb
-	@mkdir /home/$(USER)/data/wordpress
+	@mkdir /home/ljussiau/data/mariadb
+	@mkdir /home/ljussiau/data/wordpress
 	@docker-compose -f ./srcs/docker-compose.yml up -d --build
 
 down :
@@ -17,7 +17,7 @@ start :
 clean : stop
 	@docker-compose -f ./srcs/docker-compose.yml down -v
 	@docker system prune -af
-	@rm -rf /home/$(USER)/data/*
+	@rm -rf /home/ljussiau/data/*
 
 re : clean up
 
