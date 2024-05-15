@@ -1,20 +1,22 @@
 all : up
 
-up : 
+up :
 	@docker-compose -f ./srcs/docker-compose.yml up -d --build
 
-down : 
+down :
 	@docker-compose -f ./srcs/docker-compose.yml down -v
 
-stop : 
+stop :
 	@docker-compose -f ./srcs/docker-compose.yml stop
 
-start : 
+start :
 	@docker-compose -f ./srcs/docker-compose.yml start
 
-clean : 
+clean : stop
+	@docker-compose -f ./srcs/docker-compose.yml down -v
 	@docker system prune -af
 
-status : 
-	@docker ps
+re : clean up
 
+status :
+	@docker ps

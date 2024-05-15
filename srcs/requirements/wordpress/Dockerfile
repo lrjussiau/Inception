@@ -1,38 +1,35 @@
-# ==> Create a container from DEBIAN
+# Create a container from DEBIAN
 FROM debian:buster
 
-# ==> MAJ of apt-get, to get the last version of packages
+# Update apt-get, to get the last version of packages
 RUN apt-get update && apt-get upgrade -y
 
-# ==> Install WGET to download the WordPress source code
-RUN apt-get -y install wget
+# Install WGET to download the WordPress source code
+RUN apt-get -y install wget curl
 
-# ==> Install PHP 7.3 and its dependencies
-RUN apt-get install -y php7.3\
-	php-fpm\
-	php-mysql\
-	mariadb-client 
-	# not sure for mariadb client
+# Install PHP 7.3 and its dependencies
+RUN apt-get install -y php7.3 php-fpm php-mysql mariadb-client
 
-# download wordpress 6.0 from wordpress.org into /var/www/ and extract it with tar command
+# Download WordPress 6.0 from wordpress.org into /var/www/ and extract it
 RUN wget https://wordpress.org/wordpress-6.0.tar.gz -P /var/www
 RUN cd /var/www && tar -xzf wordpress-6.0.tar.gz && rm wordpress-6.0.tar.gz
 
-#copy of php configuration
-COPY	./conf/php.conf			/etc/php/7.3/fpm/pool.d/www.conf
+# Copy PHP configuration
+COPY ./conf/php.conf /etc/php/7.3/fpm/pool.d/www.conf
 
-# give the right to the user to write in the directory
-RUN		chown -R root:root /var/www/wordpress
+# Set permissions for the WordPress directory
+RUN chown -R www-data:www-data /var/www/wordpress
 
-# install wp-cli to manage wordpress installation
+# Install WP-CLI to manage WordPress installation
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-
-# copy wp-cli to /usr/local/bin/wp and give the right to the user to write in the directory
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 
-#copy auto_config
-COPY conf/script.sh auto_config.sh
+# Copy auto_config script
+COPY conf/auto_config.sh /auto_config.sh
 
-# RUN mv /var/www/wordpress/wp-config-sample.php /var/www/wordpress/wp-config.php
-ENTRYPOINT ["bash", "auto_config.sh"]
+# Make sure the auto_config.sh script is executable
+RUN chmod +x /auto_config.sh
+
+# Entry point to start the auto_config.sh script
+ENTRYPOINT ["/auto_config.sh"]

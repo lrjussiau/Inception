@@ -1,8 +1,9 @@
-version: "3.5"
+
+
+version: '3'
 
 services:
   mariadb:
-    image: mariadb
     container_name: mariadb
     volumes: 
       - mariadb:/var/lib/mysql
@@ -12,14 +13,13 @@ services:
       context: requirements/mariadb
       dockerfile: Dockerfile
     env_file: .env
-    # restart: on-failure 
+    restart: on-failure # "on-failure", container will be restarted 
     expose:
       - "3306"
 
 
 
   nginx:           # with TLSv.1.2
-    image: nginx
     container_name: nginx # name of the container
     volumes:
       - wordpress:/var/www/wordpress
@@ -33,10 +33,9 @@ services:
     env_file: .env
     ports:
       - "443:443"
-    # restart: on-failure
+    restart: on-failure
 
   wordpress:
-    image: wordpress
     container_name: wordpress
     env_file: .env
     volumes:
@@ -48,7 +47,7 @@ services:
       dockerfile: Dockerfile
     depends_on:    # wordpress will be started after mariadb
       - mariadb
-    # restart: on-failure
+    restart: on-failure
     expose: 
       - "9000"
 
